@@ -34,26 +34,20 @@ class AccountController extends Controller
         $bills = $user->bills()->orderBy('id', 'desc')->get();
         return view('client.account', compact('user', 'bills'));
     }
-
-    // Đăng ký
     public function registerSubmit(RegisterRequest $request)
-    {
-        $data = $request->validated();
+{
+    $data = $request->validated();
 
-        // Tạo người dùng và ghi thời gian gửi email xác thực
-        if ($user = User::create($data)) {
-            $user->email_verification_sent_at = now();
-            $user->save();
+    // Tạo người dùng và kích hoạt tài khoản ngay lập tức
+    $data['status'] = 'active'; // Đặt trạng thái là active
+    $data['email_verified_at'] = now(); // Xác nhận email đã được xác thực
 
-            Mail::to($user->email)->send(new VerifyAccount($user));
-
-            DeleteUserAfterTimeout::dispatch($user)->delay(now()->addMinutes(5));
-
-            return redirect()->route('login')->with('message', 'Đăng ký tài khoản thành công, vui lòng kiểm tra email để xác minh tài khoản');
-        }
-
-        return redirect()->back()->with('error', 'Đã xảy ra một số lỗi!, vui lòng thử lại');
+    if ($user = User::create($data)) {
+        return redirect()->route('login')->with('message', 'Đăng ký tài khoản thành công.');
     }
+
+    return redirect()->back()->with('error', 'Đã xảy ra một số lỗi!, vui lòng thử lại');
+}
 public function loginSubmit(Request $request)
     {
         $credentials = $request->only(['email', 'password']);
@@ -86,16 +80,7 @@ public function loginSubmit(Request $request)
             return redirect()->back()->with('error', 'Tên đăng nhập hoặc mật khẩu không đúng.');
         }
     }
-    public function verify_account($email)
-    {
-        $user = User::where('email', $email)->whereNULL('email_verified_at')->firstOrFail();
-        $user->email_verified_at = now();
-        $user->status = 'active';
-        $user->save();
-        return redirect()->route('login')->with('message', 'Xác thực tài khoản thành công');
-    }
 
-    // đăng nhập
 
 
     public function logout()
