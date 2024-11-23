@@ -32,10 +32,6 @@ use App\Http\Controllers\WishlistController;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-
-Route::get('/blog', function () {
-    return view('client.blog');
-})->name('/blog');
 Route::get('/product-detail', function () {
     return view('client.product-details');
 })->name('product-detail');
@@ -50,9 +46,6 @@ Route::get('contact', function () {
 Route::get('shop-wishlist', function () {
     return view('client.shop-wishlist');
 });
-// Route::get('shop-cart', function () {
-//     return view('client.shop-cart');
-// });
 Route::get('shop-checkout', function () {
     return view('client.shop-checkout');
 });

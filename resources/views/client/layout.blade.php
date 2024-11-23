@@ -152,7 +152,7 @@
                   </li> --}}
                   <li><a href="#"><span>GIỚI THIỆU</span></a></li>
                   <li><a href="{{route('shop.filter')}}"><span>SẢN PHẨM</span></a></li>
-                  <li><a href="{{route('/blog')}}"><span>Blog</span></a></li>
+                  <li><a href=""><span>Blog</span></a></li>
                   <li><a href="{{route('contact')}}"><span>LIÊN HỆ</span></a></li>
                 </ul>
               </div>
@@ -236,7 +236,7 @@
                     <img class="logo-main" src="{{asset('assets/img/logo-light.webp')}}" width="131" height="34" alt="Logo" />
                   </a>
                 </div>
-                <p class="desc">Khám phá bộ sưu tập giày thể thao đa dạng, phong cách và chất lượng. Mang đến sự thoải mái và tự tin cho từng bước đi của bạn.
+                <p class="desc">Khám phá bộ sưu tập quần áo đa dạng, phong cách và chất lượng. Mang đến sự thoải mái và tự tin của bạn.
                   </p>
                 <div class="social-icons">
                   <a href="https://www.facebook.com/" target="_blank" rel="noopener"><i class="fa fa-facebook"></i></a>
@@ -257,7 +257,7 @@
                 <div class="collapse-body">
                   <div class="widget-menu-wrap">
                     <ul class="nav-menu">
-                      <li><a href="contact.html">Tư vấn giày thể thao</a></li>
+                      <li><a href="contact.html">Tư vấn quần áo</a></li>
                       <li><a href="contact.html">Giao hàng tận nơi</a></li>
                       <li><a href="contact.html">Đổi trả dễ dàng</a></li>
                       <li><a href="contact.html">Hỗ trợ khách hàng</a></li>
