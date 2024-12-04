@@ -172,7 +172,60 @@
                                                     onclick="buyNow()">
                                                     Mua ngay
                                                 </button>
+                                                    <style>
+                                                        /* Container for buttons */
+                                                    .product-actions {
+                                                        display: flex;
+                                                        gap: 15px; /* Khoảng cách giữa các nút */
+                                                        margin-top: 20px;
+                                                    }
 
+                                                    /* Base button style */
+                                                    .btn-theme {
+                                                        display: inline-block;
+                                                        font-size: 16px;
+                                                        font-weight: bold;
+                                                        text-transform: uppercase;
+                                                        padding: 12px 25px;
+                                                        border-radius: 30px; /* Bo góc tròn */
+                                                        text-align: center;
+                                                        text-decoration: none;
+                                                        cursor: pointer;
+                                                        transition: all 0.3s ease;
+                                                        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Đổ bóng */
+                                                    }
+
+                                                    /* Add to Cart Button */
+                                                    .btn-add-to-cart {
+                                                        background-color: #f8c146; /* Màu vàng sáng */
+                                                        color: #333; /* Màu chữ đậm */
+                                                    }
+
+                                                    .btn-add-to-cart:hover {
+                                                        background-color: #d8a633; /* Màu vàng đậm hơn khi hover */
+                                                        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* Tăng độ bóng */
+                                                        transform: translateY(-2px); /* Nâng nút lên nhẹ */
+                                                    }
+
+                                                    /* Buy Now Button */
+                                                    .btn-buy-now {
+                                                        background-color: #eb3e32; /* Màu đỏ đậm */
+                                                        color: #fff; /* Chữ trắng */
+                                                    }
+
+                                                    .btn-buy-now:hover {
+                                                        background-color: #c9302c; /* Màu đỏ sẫm hơn khi hover */
+                                                        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* Tăng độ bóng */
+                                                        transform: translateY(-2px); /* Nâng nút lên nhẹ */
+                                                    }
+
+                                                    /* General Button Effects */
+                                                    .btn-theme:active {
+                                                        transform: translateY(0); /* Trở lại trạng thái bình thường khi nhấn */
+                                                        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Giảm đổ bóng */
+                                                    }
+
+                                                    </style>
                                             </div>
                                         </form>
                                         <form action="{{ route('buy.now') }}" method="GET" id="buy-now-form"

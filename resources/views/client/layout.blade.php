@@ -250,12 +250,10 @@ header.modern-header {
             </div>
         </nav>
     </header>
-<br>
-<br>
-
+    </div>
+    </div>
   <!--== End Header Wrapper ==-->
   <article>
-    <br>
     <div class="row" id="productContainer"></div>
             
   <script>
