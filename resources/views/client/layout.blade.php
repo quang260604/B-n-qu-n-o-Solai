@@ -44,126 +44,218 @@
 </head>
 
 <body>
+  <style>
+/* Global Styles */
+body {
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    line-height: 1.6;
+    background-color: #f9f9f9;
+}
 
+/* Wrapper for Centering Content */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+/* Header Styles */
+header.modern-header {
+    background-color: #fff;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid #ececec;
+}
+
+/* Header Top */
+.header-top {
+    background:red;
+    color: #fff;
+    padding: 10px 0;
+}
+
+.header-top-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.header-top-announcement {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.header-top-info ul {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    font-size: 14px;
+}
+
+.header-top-info ul li a {
+    color: #fff;
+    transition: color 0.3s ease;
+}
+
+.header-top-info ul li a:hover {
+    color: #ffd700;
+}
+
+/* Navigation */
+.header-nav {
+    background: #f8f9fa;
+    padding: 15px 0;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.header-nav .logo img {
+    max-height: 60px;
+}
+
+.header-nav .nav-menu {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 40px;
+}
+
+.header-nav .nav-menu li {
+    position: relative;
+    list-style: none;
+}
+
+.header-nav .nav-menu li a {
+    color: #333;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 10px 15px;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.header-nav .nav-menu li a:hover {
+    background: red;
+    color: #fff;
+}
+
+.header-nav .nav-menu li ul.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: #fff;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 10px 0;
+    z-index: 99;
+    width: 200px;
+}
+
+.header-nav .nav-menu li:hover ul.dropdown-menu {
+    display: block;
+}
+
+.header-nav .nav-menu li ul.dropdown-menu li {
+    padding: 5px 15px;
+}
+
+.header-nav .nav-menu li ul.dropdown-menu li a {
+    font-size: 14px;
+    color: #333;
+    transition: color 0.3s ease;
+}
+
+.header-nav .nav-menu li ul.dropdown-menu li a:hover {
+    color: #007bff;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .header-top-content {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+
+    .header-nav .nav-menu {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .header-nav .nav-menu li ul.dropdown-menu {
+        width: 100%;
+        position: static;
+    }
+}
+
+
+  </style>
 <!--wrapper start-->
 <div class="wrapper">
+    <!-- Header -->
+    <header class="modern-header">
+        <!-- Header Top -->
+        <div class="header-top">
+            <div class="container">
+                <div class="header-top-content">
+                    <!-- Announcement -->
+                    <div class="header-top-announcement">
+                        ✨ Miễn phí đổi trả và giao hàng toàn quốc!
+                    </div>
+                    <!-- Contact Info -->
+                    <div class="header-top-info">
+                        <ul>
+                            <li><i class="fa fa-phone"></i> <a href="tel://0123456789">+84 123 456 789</a></li>
+                            <li><i class="fa fa-envelope"></i> <a href="mailto:quang@gmail.com">quang@gmail.com</a></li>
+                            <li>
+                                <i class="fa fa-user"></i>
+                                @if (Auth::check())
+                                    <a href="{{ route('account') }}">{{ Auth::user()->full_name }}</a>
+                                @else
+                                    <a href="{{ route('login') }}">Đăng nhập / Đăng ký</a>
+                                @endif
+                            </li>
+                            <!-- Cart Icon -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-  <!--== Start Header Wrapper ==-->
-  <header class="main-header-wrapper position-relative">
-    <div class="header-top">
-      <div class="container pt--0 pb--0">
-        <div class="row">
-          <div class="col-12">
-            <div class="header-top-align">
-              <div class="header-top-align-start">
-                <div class="desc">
-                  <p>Đổi trả và giao hàng miễn phí.</p>
+        <!-- Navigation -->
+        <nav class="header-nav">
+            <div class="container">
+                <div class="logo">
+                    <a href="{{ route('/') }}">
+                        <img src="assets/img/slider/logo.jpg" alt="Logo">
+                    </a>
                 </div>
-              </div>
-              <div class="header-top-align-end">
-                <div class="header-info-items">
-                  <div class="info-items">
-                    <ul>
-                      <li class="number"><i class="fa fa-phone"></i><a href="tel://0123456789">+00 123 456 789</a></li>
-                      <li class="email"><i class="fa fa-envelope"></i><a href="mailto://quang@gmail.com">quang@gmail.com</a></li>
-                      <li class="account">
-                        <i class="fa fa-user"></i>
-                        @if (Auth::check())
-                        <a href="{{ route('account') }}">{{ Auth::user()->full_name }}</a>
-                        @else
-                            <a href="{{ route('login') }}">Tài khoản</a>
-                        @endif
+                <ul class="nav-menu">
+                    <li><a href="{{ route('/') }}">Trang chủ</a></li>
+                    <li><a href="#">Giới thiệu</a></li>
+                    <li>
+                        <a href="{{ route('shop.filter') }}">Sản phẩm</a>
                     </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="header-middle">
-      <div class="container pt--0 pb--0">
-        <div class="row align-items-center">
-          <div class="col-12">
-            <div class="header-middle-align">
-              <div class="header-middle-align-start">
-                <div class="header-logo-area">
-                  <a href="{{route('/')}}">
-                    {{-- <img class="logo-main" src="{{asset('assets/img/logo.webp')}}" width="131" height="34" alt="Logo" /> --}}
-                    <img class="logo-light" src="{{asset('assets/img/logo-light.webp')}}" width="131" height="34" alt="Logo" />
-                  </a>
-                </div>
-              </div>
-              <div class="header-middle-align-center">
-                <div class="header-search-area">
-                    <form class="header-searchbox" method="GET" action="{{ route('search') }}">
-                        <input type="search" name="name" class="form-control" placeholder="Tìm kiếm">
-                        <button class="btn-submit" type="submit"><i class="pe-7s-search"></i></button>
-                    </form>
-                </div>
-            </div>                                        
-              <div class="header-middle-align-end">
-                <div class="header-action-area">
-                  <div class="shopping-search">
-                    <button class="shopping-search-btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#AsideOffcanvasSearch" aria-controls="AsideOffcanvasSearch"><i class="pe-7s-search icon"></i></button>
-                  </div>
-                  <div class="shopping-wishlist">
-                    <a class="shopping-wishlist-btn" href="{{ route('wishlist.index') }}">
-                      <i class="pe-7s-like icon"></i>
-                    </a>
-                  </div>
-                  <div class="shopping-order">
-                    <a class="shopping-cart-btn" type="button" href="{{ route('bills.index') }}">
-                      <i class="pe-7s-cart icon"></i>
-                    </a>
-                  </div>
-                  <div class="shopping-cart">
-                    <a class="shopping-cart-btn" href="{{route('cart.show')}}">
-                    <button class="shopping-cart-btn" type="button">
-                      <i class="pe-7s-shopbag icon"></i>
-                      {{-- <sup class="shop-count"></sup> --}}
-                    </button></a>
-                  </div>
-                  <button class="btn-menu" type="button" data-bs-toggle="offcanvas" data-bs-target="#AsideOffcanvasMenu" aria-controls="AsideOffcanvasMenu">
-                    <i class="pe-7s-menu"></i>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="header-area header-default">
-      <div class="container">
-        <div class="row no-gutter align-items-center position-relative">
-          <div class="col-12">
-            <div class="header-align">
-              <div class="header-navigation-area position-relative">
-                <ul class="main-menu nav">
-                    <li><a href="{{route('/')}}"><span>TRANG CHỦ</span></a></li>
-                  {{-- <li class="has-submenu"><a href="#/"><span>Home</span></a>
-                    <ul class="submenu-nav">
-                      <li><a href="index.html"><span>Home One</span></a></li>
-                      <li><a href="index-two.html"><span>Home Two</span></a></li>
-                    </ul>
-                  </li> --}}
-                  <li><a href="#"><span>GIỚI THIỆU</span></a></li>
-                  <li><a href="{{route('shop.filter')}}"><span>SẢN PHẨM</span></a></li>
-                  <li><a href=""><span>Blog</span></a></li>
-                  <li><a href="{{route('contact')}}"><span>LIÊN HỆ</span></a></li>
+                    <li><a href="#">Blog</a></li>
+                    <li><a href="{{ route('contact') }}">Liên hệ</a></li>
+                    <li class="cart-icon">
+                                <a href="{{ route('cart.show') }}">
+                                    <i class="fa fa-shopping-cart"></i>
+                                    <span class="cart-count">3</span> <!-- Số lượng sản phẩm trong giỏ -->
+                                </a>
+                            </li>
                 </ul>
-              </div>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </header>
+        </nav>
+    </header>
+<br>
+<br>
+
   <!--== End Header Wrapper ==-->
   <article>
+    <br>
     <div class="row" id="productContainer"></div>
             
   <script>
@@ -233,7 +325,7 @@
               <div class="about-widget-wrap">
                 <div class="widget-logo-area">
                   <a href="index.html">
-                    <img class="logo-main" src="{{asset('assets/img/logo-light.webp')}}" width="131" height="34" alt="Logo" />
+                    <img class="logo-main" src="{{asset('assets/img/slider/logo.jpg')}}" width="131" height="34" alt="Logo" />
                   </a>
                 </div>
                 <p class="desc">Khám phá bộ sưu tập quần áo đa dạng, phong cách và chất lượng. Mang đến sự thoải mái và tự tin của bạn.
@@ -302,7 +394,7 @@
                       <li><span>Địa chỉ: </span>Nam Từ Liêm - Hà Nội.</li>
                       <li><span>Điện thoại:</span> <a href="tel://0123456789">0999999999</a></li>
                       <li><span>Email:</span> <a href="mailto://demo@example.com">demo@example.com</a></li>
-                      <li><a target="_blank" href="https://www.hasthemes.com/">OlaSneaker.vn</a></li>
+                      <li><a target="_blank" href="https://www.hasthemes.com/">Solai.vn</a></li>
                     </ul>
                   </div>
                 </div>

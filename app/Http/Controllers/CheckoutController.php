@@ -324,7 +324,6 @@ class CheckoutController extends Controller
                 DB::commit();
 
                 $userEmail = Auth::user()->email;
-                Mail::to($userEmail)->send(new OrderConfirmationMail($bill));
 
                 return redirect()->route('tt-thanh-cong')->with('success', 'Thanh toán thành công!');
             } catch (\Exception $e) {

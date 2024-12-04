@@ -121,6 +121,23 @@
                       <li data-bg-color="#c7bb9b"></li>
                     </ul>
                   </div> --}}
+                                                            @if(session('success'))
+                                                <div class="alert alert-success">
+                                                    {{ session('success') }}
+                                                </div>
+                                            @endif
+ 
+                                            @if(session('error'))
+                                                <div class="alert alert-danger">
+                                                    {{ session('error') }}
+                                                </div>
+                                            @endif
+
+                                            @if(session('message'))
+                                                <div class="alert alert-info">
+                                                    {{ session('message') }}
+                                                </div>
+                                            @endif
                                         <form action="{{ route('cart.add') }}" method="POST" id="product-form">
                                             @csrf
                                             <div class="product-size">
@@ -138,23 +155,19 @@
                                             </div>
 
                                             <div id="stock-info" class="stock-info mb-2"></div>
-
                                             <div class="product-quick-action">
-                                                <div class="qty-wrap">
-                                                    <!-- Cập nhật `variant_id` đã chọn vào đây -->
-                                                    <input type="hidden" name="variant_id" id="selected-variant-id"
-                                                        value="">
-                                                    <div class="pro-qty">
-                                                        <input type="number" title="Quantity" name="variant_quantity"
-                                                            value="1" min="1">
-                                                    </div>
-                                                </div>
+                        <div class="qty-wrap">
+                            <!-- Cập nhật `variant_id` đã chọn vào đây -->
+                            <input type="hidden" name="variant_id" id="selected-variant-id" value="">
 
-                                                <button type="submit" id="add-to-cart-btn" onclick="addToCart(event)"
-                                                    class="btn-theme">
-                                                    Thêm vào giỏ hàng
-                                                </button>
+                            <div class="pro-qty">
+                                <input type="number" title="Quantity" name="variant_quantity" value="1" onchange="validateQuantity(event)"
+                                >
+                            </div>
+                        </div>
+                        <button type="submit" id="add-to-cart-btn" onclick="addToCart(event)" class="btn-theme">Thêm vào giỏ hàng</button>
 
+                                                    
                                                 <button type="button" id="buy-now-btn" class="btn-theme"
                                                     onclick="buyNow()">
                                                     Mua ngay
@@ -247,34 +260,93 @@
                                             }
 
                                             function addToCart(event) {
-                                                if (!selectedVariantId || selectedStock == 0) {
-                                                    event.preventDefault();
-                                                    alert('Bạn cần chọn kích thước trước khi thêm vào giỏ hàng!');
-                                                } else {
-                                                    // Optional: send data via AJAX instead of form submit
-                                                    let formData = new FormData();
-                                                    formData.append('variant_id', selectedVariantId);
-                                                    formData.append('variant_quantity', document.querySelector('input[name="variant_quantity"]').value);
+    // Ngăn chặn hành động mặc định của nút submit
+    event.preventDefault();
 
-                                                    fetch('{{ route('cart.add') }}', {
-                                                            method: 'POST',
-                                                            headers: {
-                                                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                                                            },
-                                                            body: formData
-                                                        })
-                                                        .then(response => response.json())
-                                                        .then(data => {
-                                                            if (data.success) {
-                                                                // Nếu thêm vào giỏ hàng thành công, chuyển hướng đến trang giỏ hàng
-                                                                window.location.href = '{{ route('cart.show') }}'; // Đường dẫn tới trang giỏ hàng
-                                                            } else {
-                                                                alert('Đã xảy ra lỗi khi thêm vào giỏ hàng.');
-                                                            }
-                                                        })
-                                                        .catch(error => console.error('Error:', error));
-                                                }
-                                            }
+    const quantityInput = document.querySelector('input[name="variant_quantity"]');
+    const quantity = parseInt(quantityInput.value);
+    const variantId = document.querySelector('#selected-variant-id').value;
+    const selectedStock = parseInt(document.querySelector('#selected-stock').value); // Giả sử bạn có phần tử chứa thông tin tồn kho
+
+    if (!variantId) {
+        alert('Vui lòng chọn sản phẩm trước khi thêm vào giỏ hàng!');
+        return;
+    }
+
+    // Kiểm tra xem giỏ hàng đã có sản phẩm này chưa và số lượng trong giỏ
+    const existingCartItems = JSON.parse(localStorage.getItem('carts')) || [];
+    const existingProduct = existingCartItems.find(item => item.variant_id === variantId);
+
+    // Kiểm tra nếu sản phẩm đã có trong giỏ hàng và số lượng đã đạt tối đa
+    if (existingProduct) {
+        if (existingProduct.variant_quantity >= selectedStock) {
+            alert('Giỏ hàng của bạn đã có tối đa số lượng sản phẩm này.');
+            return; // Ngừng hàm nếu số lượng trong giỏ hàng đã đủ
+        }
+    }
+
+    // Kiểm tra số lượng vượt quá số lượng tồn kho
+    if (quantity > selectedStock) {
+        alert(`Số lượng bạn chọn vượt quá số lượng tồn kho! Vui lòng chọn số lượng từ 1 đến ${selectedStock}.`);
+        quantityInput.value = selectedStock; // Đặt lại số lượng hợp lệ
+        return;
+    }
+
+    // Nếu sản phẩm chưa có trong giỏ hàng hoặc số lượng chưa đạt tối đa, tiến hành thêm sản phẩm
+    if (!existingProduct) {
+        // Thêm sản phẩm vào giỏ hàng nếu chưa có
+        existingCartItems.push({
+            variant_id: variantId,
+            variant_quantity: quantity,
+            created_at: new Date().toISOString(), // Thời gian tạo sản phẩm trong giỏ
+            updated_at: new Date().toISOString()  // Thời gian cập nhật sản phẩm trong giỏ
+        });
+    } else {
+        // Cập nhật số lượng sản phẩm nếu đã có trong giỏ hàng
+        existingProduct.variant_quantity += quantity;
+    }
+
+    // Lưu lại giỏ hàng vào localStorage
+    localStorage.setItem('cartItems', JSON.stringify(existingCartItems));
+    alert('Sản phẩm đã được thêm vào giỏ hàng!');
+
+    // Gửi dữ liệu qua AJAX hoặc Form
+    let formData = new FormData();
+    formData.append('variant_id', variantId);
+    formData.append('variant_quantity', quantity);
+
+    fetch('{{ route('cart.add') }}', {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            window.location.href = '{{ route('cart.show') }}'; // Chuyển đến trang giỏ hàng
+        } else {
+            alert('Đã xảy ra lỗi khi thêm vào giỏ hàng.');
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+function validateQuantity(event) {
+    const quantityInput = event.target; // Lấy input đang thay đổi
+    const quantity = parseInt(quantityInput.value);
+    
+    // Kiểm tra số lượng nhỏ hơn tối thiểu hoặc vượt quá số lượng tồn kho
+    if (quantity > selectedStock) {
+        alert(`Số lượng bạn chọn vượt quá số lượng tồn kho! Vui lòng chọn số lượng từ 1 đến ${selectedStock}.`);
+        quantityInput.value = selectedStock; // Đặt lại số lượng hợp lệ
+    } else if (quantity < 1) {
+        alert('Số lượng phải lớn hơn hoặc bằng 1.');
+        quantityInput.value = 1; // Đặt lại số lượng tối thiểu là 1
+    }
+}
+
 
                                             // mua ngay
                                             function disableBuyNow() {

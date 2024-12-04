@@ -137,9 +137,9 @@
         <div class="row">
           <div class="col-12">
             <div class="section-title text-center">
+              <br>
               <h3 class="title">Sản Phẩm Mới nhất</h3>
               <div class="desc">
-                <p>Khám phá bộ sưu tập giày thể thao hàng đầu của chúng tôi.</p>
               </div>
             </div>
           </div>

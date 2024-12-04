@@ -53,7 +53,7 @@
                                     <tbody>
 
                                         @foreach ($carts as $cart)
-                                            <tr class="cart-product-item">
+                                        <tr class="cart-product-item" data-stock="{{ $cart->variant->stock }}" data-id="{{ $cart->id }}">
                                                 <input type="hidden" name="id[]" value="{{ $cart->id }}" />
                                                 <input type="hidden" name="variant_id[]" value="{{ $cart->variant_id }}" />
                                                 
@@ -79,11 +79,15 @@
                                                     <span>{{ number_format($cart->variant->sale_price) }} VNĐ</span>
                                                 </td>
                                                 <td class="product-quantity">
-                                                    <div class="pro-qty">
-                                                        <div class="dec qty-btn">-</div>
-                                                        <input type="number" class="quantity-input" name="variant_quantity[]" value="{{ $cart->variant_quantity }}" min="1" max="{{ $cart->variant->stock }}" data-price="{{ $cart->variant->sale_price }}" required>
-                                                        <div class="inc qty-btn">+</div>
-                                                    </div>
+                                                @if ($cart->variant->stock == 0)
+                    <span class="text-danger">Sản phẩm trong kho đã hết</span>
+                @else
+                    <div class="pro-qty">
+                        <div class="dec qty-btn">-</div>
+                        <input type="number" class="quantity-input" name="variant_quantity[]" value="{{ $cart->variant_quantity }}" min="1" max="{{ $cart->variant->stock }}" data-price="{{ $cart->variant->sale_price }}" required>
+                        <div class="inc qty-btn">+</div>
+                    </div>
+                @endif
                                                 </td>
                                                 <td class="product-subtotal">
                                                     <span class="subtotal">{{ number_format($cart->variant->sale_price * $cart->variant_quantity) }} VNĐ</span>
@@ -101,7 +105,6 @@
                                                         onclick="return confirm('Bạn có chắc chắn muốn xóa toàn bộ giỏ hàng không?');">Xóa
                                                         toàn bộ giỏ hàng</button>
                                                 </form>
-                                                <a href="{{ route('shop.filter') }}" class="btn-theme btn-flat">Tiếp tục mua sắm</a>
                                             </td>
                                         </tr>
 
@@ -134,7 +137,7 @@
                         </div>
                     </div>
                     <div class="row justify-content-end">
-                        <div class="col-md-12 col-lg-4">
+                        <!-- <div class="col-md-12 col-lg-4">
                             <div class="shipping-form-coupon">
                                 <div class="section-title-cart">
                                     <h5 class="title">Mã giảm giá</h5>
@@ -160,8 +163,8 @@
                                     </div>
 
                                 </form>
-                            </div>
-                        </div>
+                            </div> -->
+                        <!-- </div> -->
 
                         <div class="col-md-12 col-lg-4">
                             <div class="shipping-form-cart-totals">
@@ -203,7 +206,45 @@
                                     </table>
                                 </div>
                             </div>
-                           <a class="btn-theme btn-flat" href="{{route('checkout.process')}}">Tiến hành thanh toán</a>
+                            <a class="btn-theme btn-flat checkout-btn" href="{{route('checkout.process')}}">Thanh toán</a>
+                            <style>
+                                /* Button Theme */
+.btn-theme {
+    display: inline-block;
+    font-size: 16px;
+    font-weight: bold;
+    color: #fff;
+    background: linear-gradient(90deg, #d9534f, #c9302c); /* Hiệu ứng chuyển màu đỏ */
+    padding: 12px 25px;
+    border-radius: 30px; /* Bo tròn nút */
+    text-align: center;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Đổ bóng */
+}
+
+/* Flat Style */
+.btn-flat {
+    border: none;
+    outline: none;
+}
+
+/* Hover Effect */
+.btn-theme:hover {
+    background: linear-gradient(90deg, #c9302c, #d9534f); /* Đảo ngược màu gradient khi hover */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Tăng đổ bóng khi hover */
+    transform: translateY(-2px); /* Nâng nút lên nhẹ */
+}
+
+/* Checkout Button (Specific) */
+.checkout-btn {
+    font-size: 18px;
+    padding: 15px 30px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase; /* Chữ hoa */
+}
+
+                            </style>
                         </div>
                     </div>
                 @endif

@@ -18,28 +18,50 @@ use League\CommonMark\Extension\CommonMark\Node\Inline\Strong;
 class CartController extends Controller
 {
 
-    public function updateAll(Request $request){
-        $body = $request->all();
-        $listId = $body['id']; 
-        $listQuantity = $body['variant_quantity'];
-        $listVariantId = $body['variant_id'];
-        Cart::where('user_id', Auth::id())->delete();
+    public function updateAll(Request $request)
+{
+    $body = $request->all();
+    $listId = $body['id']; 
+    $listQuantity = $body['variant_quantity'];
+    $listVariantId = $body['variant_id'];
 
-        for ($i=0; $i < count($listId); $i++) { 
-            Cart::create([
-                'user_id' => Auth::id(),
-                'variant_id' => $listVariantId[$i],
-                'variant_quantity' => $listQuantity[$i],
-            ]);
+    $errors = [];
+    
+    // Kiểm tra số lượng tồn kho trước khi cập nhật
+    for ($i = 0; $i < count($listId); $i++) {
+        $variant = Variant::find($listVariantId[$i]);
+
+        if (!$variant) {
+            $errors[] = "Sản phẩm với ID {$listVariantId[$i]} không tồn tại.";
+            continue;
         }
-        return redirect()->back()->with('success', 'Giỏ hàng được cập nhật thành công');
+        $productName = $variant->product->name;
+
+        if ($variant->stock < $listQuantity[$i]) {
+            $errors[] = "Sản phẩm '{$productName}' không đủ số lượng trong kho (còn lại {$variant->stock}).";
+        }
+    }
+    if (!empty($errors)) {
+        return redirect()->back()->with('error', implode('<br>', $errors));
+    }
+    Cart::where('user_id', Auth::id())->delete();
+    for ($i = 0; $i < count($listId); $i++) {
+        Cart::create([
+            'user_id' => Auth::id(),
+            'variant_id' => $listVariantId[$i],
+            'variant_quantity' => $listQuantity[$i],
+        ]);
     }
 
-    public function showCart()
+    return redirect()->back()->with('success', 'Giỏ hàng được cập nhật thành công.');
+}
+
+    
+
+public function showCart()
 {
     $productSizes = ProductSize::all();
     $carts = Cart::where('user_id', Auth::id())->with('variant.product')->get();
-
     // Tính tổng tiền giỏ hàng
     $provisional = $carts->sum(function ($cart) {
         return $cart->variant->sale_price * $cart->variant_quantity;
@@ -64,6 +86,7 @@ class CartController extends Controller
 
     return view('client.shop-cart', compact('carts', 'discount', 'provisional', 'cartTotal'));
 }
+
 public function addToCart(Request $request)
 {
     // Kiểm tra nếu người dùng chưa đăng nhập
@@ -80,10 +103,16 @@ public function addToCart(Request $request)
     // Tìm variant từ cơ sở dữ liệu
     $variant = Variant::find($request->variant_id);
 
+    // Kiểm tra nếu sản phẩm không tồn tại
+    if (!$variant) {
+        return redirect()->back()->with('error', 'Sản phẩm không tồn tại.');
+    }
+
     // Kiểm tra số lượng tồn kho
     if ($variant->stock < $request->variant_quantity) {
         return redirect()->back()->with('error', 'Số lượng sản phẩm trong kho không đủ.');
     }
+
     // Tìm sản phẩm đã có trong giỏ hàng của user
     $cart = Cart::where('user_id', Auth::id())
                 ->where('variant_id', $request->variant_id)
@@ -92,10 +121,12 @@ public function addToCart(Request $request)
     // Nếu sản phẩm đã có trong giỏ hàng thì cập nhật số lượng
     if ($cart) {
         // Kiểm tra nếu tổng số lượng không vượt quá tồn kho
-        if (($cart->variant_quantity + $request->variant_quantity) > $variant->stock) {
-            return redirect()->back()->with('error', 'Số lượng sản phẩm trong kho không đủ.');
+        $newQuantity = $cart->variant_quantity + $request->variant_quantity;
+        if ($newQuantity > $variant->stock) {
+            return redirect()->back()->with('error', "Giỏ hàng của bạn đã có tối đa sản phẩm này");
         }
-        $cart->variant_quantity += $request->variant_quantity;
+
+        $cart->variant_quantity = $newQuantity;
         $cart->save();
     } else {
         // Nếu chưa có thì tạo mới

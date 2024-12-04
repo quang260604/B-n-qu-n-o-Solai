@@ -90,8 +90,6 @@ class BillController extends Controller
             Mail::to($customerEmail)->send(new OrderCompletedMail($bill));
             // Cộng điểm cho người dùng khi đơn hàng hoàn thành (7/11/2024)
             $bill->awardPointsToUser(); // Cộng điểm cho người dùng
-        } else {
-            Mail::to($customerEmail)->send(new OrderStatusUpdatedMail($bill, $history->note, $history->at_datetime));
         }
 
 

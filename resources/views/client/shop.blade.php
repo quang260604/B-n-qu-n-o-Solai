@@ -150,59 +150,127 @@
                         </div>
                     </div>
                     <div class="col-xl-3">
-                        <div class="shop-sidebar">
-                            <div class="shop-sidebar-category">
-                                <h4 class="sidebar-title">Danh mục</h4>
-                                <div class="sidebar-category">
-                                    <ul class="category-list mb--0">
-                                        @foreach($categories as $category)
-                                            <li>
-                                                <a href="#" class="filter-category {{ request('category_id') == $category->id ? 'active' : '' }}" data-category-id="{{ $category->id }}">
-                                                    {{ $category->name }} <span>({{ $category->products_count }})</span>
-                                                </a>
-                                            </li>
-                                        @endforeach
-                                    </ul>
-                                    <style>
-                                        .filter-category.active {
-                                                            
-                                                            border-bottom: 2px solid #eb3e32;
-                                            }
-                                    </style>
-                              </div>
-                            </div>
-
-                            <div class="shop-sidebar-price-range">
-                                <h4 class="sidebar-title">Giá</h4>
-                                <div class="sidebar-price-range">
-                                    <div id="price-range"></div>
-                                    <p>
-                                        {{-- <label for="amount">Khoảng giá:</label> --}}
-                                        <input type="text" id="amount" readonly style="border:0; color:#f6931f; font-weight:bold; background: #fafafa ">
-                                    </p>
-                                </div>
-                            </div>
-
-                            {{-- <div class="shop-sidebar-size">
-              <h4 class="sidebar-title">Size</h4>
-              <div class="sidebar-size">
-                <ul class="size-list">
-                  <li><a href="shop.html">36 <span>(6)</span></a></li>
-                  <li><a href="shop.html">37 <span>(4)</span></a></li>
-                  <li><a href="shop.html">38 <span>(2)</span></a></li>
-                  <li><a href="shop.html">39 <span>(6)</span></a></li>
-                  <li><a href="shop.html">40 <span>(12)</span></a></li>
-                  <li><a href="shop.html">41 <span>(12)</span></a></li>
-                  <li><a href="shop.html">42 <span>(12)</span></a></li>
-                  <li><a href="shop.html">43 <span>(12)</span></a></li>
+    <div class="shop-sidebar">
+        <!-- Sidebar Category -->
+        <div class="shop-sidebar-category">
+            <h4 class="sidebar-title">Danh mục</h4>
+            <div class="sidebar-category">
+                <ul class="category-list">
+                    @foreach($categories as $category)
+                        <li>
+                            <a href="#" class="filter-category {{ request('category_id') == $category->id ? 'active' : '' }}" 
+                               data-category-id="{{ $category->id }}">
+                                {{ $category->name }} 
+                                <span>({{ $category->products_count }})</span>
+                            </a>
+                        </li>
+                    @endforeach
                 </ul>
-              </div>
-            </div> --}}
-
-                        </div>
-                    </div>
-                </div>
             </div>
+        </div>
+
+        <!-- Sidebar Price Range -->
+        <div class="shop-sidebar-price-range">
+            <h4 class="sidebar-title">Giá</h4>
+            <div class="sidebar-price-range">
+                <div id="price-range"></div>
+                <p>
+                    <input type="text" id="amount" readonly 
+                           style="border:0; color:#eb3e32; font-weight:bold; background: #f9f9f9; text-align: center;">
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    /* Sidebar Container */
+.shop-sidebar {
+    background-color: #fff;
+    border: 1px solid #eaeaea;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Sidebar Title */
+.sidebar-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 15px;
+    position: relative;
+}
+
+.sidebar-title:after {
+    content: "";
+    width: 50px;
+    height: 2px;
+    background-color: #eb3e32;
+    display: block;
+    margin-top: 5px;
+}
+
+/* Category List */
+.category-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.category-list li {
+    margin-bottom: 10px;
+}
+
+.category-list li a {
+    display: flex;
+    justify-content: space-between;
+    color: #555;
+    font-size: 16px;
+    font-weight: 500;
+    text-decoration: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.category-list li a:hover,
+.category-list li a.active {
+    background-color: #eb3e32;
+    color: #fff;
+}
+
+/* Price Range */
+.sidebar-price-range {
+    margin-top: 30px;
+}
+
+#price-range {
+    margin-top: 10px;
+    height: 5px;
+    background: #eb3e32;
+    border-radius: 5px;
+    position: relative;
+}
+
+#amount {
+    margin-top: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+}
+
+/* General Adjustments */
+ul {
+    padding: 0;
+    margin: 0;
+}
+
+li {
+    list-style: none;
+}
+
+</style>
         </section>
         <!--== End Product Area Wrapper ==-->
     </main>
