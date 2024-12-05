@@ -199,6 +199,7 @@ Route::get('tt-that-bai', function () {
 Route::get('tt-thanh-cong', function () {
     return view('client.tt-thanh-cong');
 })->name('tt-thanh-cong');
+Route::post('/payment/process', [CheckoutController::class, 'processPayment'])->name('payment.process');
 
 Route::get('/payment/return', [CheckoutController::class, 'returnFromVNPAY'])->name('checkout.vnpay.returnFrom');
 Route::post('/checkout/vnpay', [CheckoutController::class, 'processVNPAY'])->name('checkout.vnpay');

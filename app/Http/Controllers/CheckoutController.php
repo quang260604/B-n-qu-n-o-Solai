@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Bill;
 use App\Models\BillItem;
+use App\Models\BillHistory;
 use App\Models\Cart;
 use App\Models\Variant;
 use Illuminate\Http\Request;
@@ -16,6 +17,66 @@ use Illuminate\Support\Facades\Mail;
 
 class CheckoutController extends Controller
 {
+public function processPayment(Request $request)
+{
+    $validated = $request->validate([
+        'transaction_id' => 'required|string',
+        'wallet_address' => 'required|string',
+        'amount' => 'required|numeric',
+        'recipient' => 'required|string',
+        'bill_code' => 'required|string', // Mã đơn hàng
+    ]);
+
+    try {
+        // Tìm đơn hàng từ bảng bills
+        $bill = Bill::where('code', $validated['bill_code'])
+                    ->where('payment_status', 'pending') // Đảm bảo đơn chưa được thanh toán
+                    ->first();
+
+        if (!$bill) {
+            return response()->json(['success' => false, 'message' => 'Không tìm thấy đơn hàng!'], 404);
+        }
+
+        // // Lưu giao dịch vào bảng transactions
+        // Transaction::create([
+        //     'transaction_id' => $validated['transaction_id'],
+        //     'wallet_address' => $validated['wallet_address'],
+        //     'amount' => $validated['amount'],
+        //     'recipient' => $validated['recipient'],
+        //     'status' => 'completed',
+        // ]);
+
+        // Cập nhật trạng thái đơn hàng trong bảng bills
+        $oldPaymentStatus = $bill->payment_status;
+        $oldBillStatus = $bill->bill_status;
+
+        $bill->update([
+            'payment_status' => 'paid',
+            'bill_status' => 'processing', // Hoặc trạng thái phù hợp với quy trình của bạn
+        ]);
+
+        // Lưu lịch sử vào bảng bill_histories
+        BillHistory::create([
+            'bill_id' => $bill->id,
+            'by_user' => auth()->id(), // Người dùng thực hiện thanh toán
+            'from_status' => $oldBillStatus,
+            'to_status' => 'processing',
+            'note' => 'Thanh toán thành công qua ví Phantom.',
+            'at_datetime' => now(),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        return response()->json(['success' => true, 'message' => 'Thanh toán và cập nhật lịch sử thành công!']);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Có lỗi xảy ra trong quá trình xử lý.',
+            'error' => $e->getMessage(),
+        ], 500);
+    }
+}
+
     //
     public function checkout()
     {
@@ -562,4 +623,5 @@ class CheckoutController extends Controller
             return redirect()->route('tt-that-bai')->with('error', 'Thông tin không hợp lệ!');
         }
     }
+    
 }

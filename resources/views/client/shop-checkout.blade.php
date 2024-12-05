@@ -175,6 +175,91 @@
                                                 <label for="payment_vnpay" aria-labelledby="check_payments4"
                                                     data-bs-parent="#PaymentMethodAccordion">Thanh toán với VNPAY</label>
                                             </div>
+                                            <div>
+    <input type="radio" id="payButton" value="online">
+    <label for="payButton">Thanh toán với ví Phantom</label>
+</div>
+
+<!-- Trạng thái kết nối ví Phantom sẽ hiển thị ở đây -->
+<div id="status"></div>
+
+<!-- Nhúng tệp JavaScript -->
+<script src="{{ asset('js/solana_transaction.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.58.1/dist/web3.min.js"></script>
+<script>
+    // Kiểm tra ví Phantom
+    if (window.solana && window.solana.isPhantom) {
+        console.log("Phantom wallet is installed");
+
+        // Tự động kết nối với ví Phantom
+        window.solana.connect()
+            .then((response) => {
+                const userWallet = response.publicKey.toString();
+                console.log("Connected Phantom Wallet: ", userWallet);
+                document.getElementById("status").textContent = `Đã kết nối ví: ${userWallet}`;
+                document.getElementById("payButton").disabled = false; // Kích hoạt nút thanh toán
+            })
+            .catch((error) => {
+                console.error("Không thể kết nối ví Phantom: ", error);
+                document.getElementById("status").textContent = "Không thể kết nối với ví Phantom!";
+            });
+    } else {
+        alert("Vui lòng cài đặt Phantom Wallet!");
+        document.getElementById("status").textContent = "Ví Phantom chưa được cài đặt!";
+    }
+
+    document.getElementById("payButton").addEventListener("click", async () => {
+        try {
+            const userWallet = window.solana.publicKey.toString();
+            const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl("mainnet-beta"), "confirmed");
+
+            // Địa chỉ ví người nhận
+            const recipient = new solanaWeb3.PublicKey("Recipient_Public_Key");
+            const lamports = solanaWeb3.LAMPORTS_PER_SOL * 0.01; // 0.01 SOL
+
+            // Tạo giao dịch
+            const transaction = new solanaWeb3.Transaction().add(
+                solanaWeb3.SystemProgram.transfer({
+                    fromPubkey: new solanaWeb3.PublicKey(userWallet),
+                    toPubkey: recipient,
+                    lamports: lamports,
+                })
+            );
+
+            // Ký giao dịch
+            const signedTransaction = await window.solana.signTransaction(transaction);
+
+            // Gửi giao dịch lên mạng Solana
+            const txId = await connection.sendRawTransaction(signedTransaction.serialize());
+            console.log("Transaction successful, ID: ", txId);
+
+            // Gửi dữ liệu giao dịch về backend
+            const response = await fetch("{{ route('payment.process') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({
+                    transaction_id: txId,
+                    wallet_address: userWallet,
+                    amount: lamports,
+                    recipient: recipient.toString(),
+                })
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                document.getElementById("status").textContent = `Thanh toán thành công! ID: ${txId}`;
+            } else {
+                document.getElementById("status").textContent = "Có lỗi xảy ra khi xử lý đơn hàng!";
+            }
+        } catch (error) {
+            console.error("Có lỗi trong quá trình thanh toán: ", error);
+            document.getElementById("status").textContent = "Lỗi thanh toán!";
+        }
+    });
+</script>
 
                                             {{-- <div id="bankSelectionModal" class="modal">
                                                 <div class="modal-content">
